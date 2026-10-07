@@ -1,43 +1,95 @@
-# JUnit Pocket
+<p align="center">
+  <img src="docs/assets/banner.svg" alt="JUnit Pocket — JUnit XML in, focused JSON out" width="100%">
+</p>
 
-JUnit XML raporunu küçük, makine tarafından okunabilir bir JSON özetine dönüştüren yerel Python CLI.
-CI sonuçlarını incelemek veya başka bir araca aktarmak için gerçek test sayılarını ve
-başarısız testlerin adlarını çıkarır. Hesap, API anahtarı veya çalışma zamanı bağımlılığı istemez.
+<p align="center">
+  <strong>A small, local CLI that turns JUnit XML into a focused JSON test summary.</strong><br>
+  Real test counts. Bounded failure identifiers. No account or API key.
+</p>
 
-GitHub Actions, her push ve PR'da testleri ve Ruff kontrollerini çalıştırır.
+<p align="center">
+  <a href="https://github.com/umutgungorr/junit-pocket/actions/workflows/ci.yml"><img src="https://github.com/umutgungorr/junit-pocket/actions/workflows/ci.yml/badge.svg" alt="CI status"></a>
+  <img src="https://img.shields.io/badge/Python-3.12%2B-3776AB?logo=python&amp;logoColor=white" alt="Python 3.12 or newer">
+  <img src="https://img.shields.io/badge/Runtime-Standard%20library-14B8A6" alt="Standard library runtime">
+  <img src="https://img.shields.io/badge/Works-Offline-8B5CF6" alt="Works offline">
+</p>
 
-## Hızlı kullanım
+<p align="center">
+  <a href="#-quick-start">Quick start</a> ·
+  <a href="#-see-the-output">Example output</a> ·
+  <a href="#-cli-options">CLI options</a> ·
+  <a href="#-data-boundaries">Data boundaries</a>
+</p>
 
-Python **3.12 veya üzeri** gerekir. Bu klasördeki kaynak kodla doğrudan çalıştırabilirsiniz.
+---
 
-PowerShell:
+## ✨ Why JUnit Pocket?
+
+You already have a JUnit report. You need its test totals and failing test names in a predictable format for a script, a CI step, or another tool.
+
+| 🧮 Accurate counts | 📦 Compact output | 🏠 Local by default |
+| :--- | :--- | :--- |
+| Counts actual `testcase` records instead of trusting declared XML totals. | Includes failure/error identifiers with a configurable limit and a count of omitted entries. | Uses Python's standard library, with no runtime dependencies or network requests. |
+
+```mermaid
+flowchart LR
+    A["📄 JUnit XML"] --> B["🧮 Count test cases"]
+    B --> C["🔎 Select failure identifiers"]
+    C --> D["🛡️ Mask supported patterns and apply limits"]
+    D --> E["📦 JSON · stdout or new file"]
+```
+
+## 🚀 Quick start
+
+Requires **Python 3.12+**. Run these commands from the repository root using the included source code.
+
+### Windows · PowerShell
 
 ```powershell
 $env:PYTHONPATH = (Resolve-Path ./src).Path
 python -m junit_pocket --junit examples/sample.xml
-python -m junit_pocket --junit examples/sample.xml --max-items 5 -o report.json
 ```
 
-Linux / macOS:
+### Linux / macOS
 
 ```bash
 PYTHONPATH=src python -m junit_pocket --junit examples/sample.xml
+```
+
+**Save a JSON file and limit the failure list:**
+
+```powershell
+# PowerShell, after setting PYTHONPATH above
+python -m junit_pocket --junit examples/sample.xml --max-items 5 -o report.json
+```
+
+```bash
+# Linux / macOS
 PYTHONPATH=src python -m junit_pocket --junit examples/sample.xml --max-items 5 -o report.json
 ```
 
-Kendi raporunuz için `examples/sample.xml` yerine JUnit XML dosyanızı verin.
-`-o` kullanmazsanız JSON stdout'a yazılır. Çıktı dosyası varsa işlem reddedilir;
-aynı isimdeki dosyayı ezmez. Rapor test hatası içerse de başarılı dönüşümün çıkış kodu `0` olur.
-Geçersiz argüman, girdi veya çıktı hatasında çıkış kodu `2` olur.
+Replace `examples/sample.xml` with your own JUnit report. Without `-o`, JSON goes to stdout. An existing output file is never overwritten.
 
-## Örnek çıktı
+> 💡 A successful conversion exits with `0`, even when the report contains failing tests. Invalid arguments, input, or output produce exit code `2`.
 
-Bir başarılı, bir atlanan, bir başarısız ve bir kurulum hatası olan örnek rapor:
+## 📊 See the output
+
+The included sample has **4 tests**: one passed, one failed, one error, and one skipped.
+
+| ✅ Passed | ❌ Failed | ⚠️ Errors | ⏭️ Skipped |
+| :---: | :---: | :---: | :---: |
+| 1 | 1 | 1 | 1 |
 
 ```json
 {
   "schema_version": "1.0",
-  "summary": {"tests": 4, "passed": 1, "failed": 1, "errors": 1, "skipped": 1},
+  "summary": {
+    "tests": 4,
+    "passed": 1,
+    "failed": 1,
+    "errors": 1,
+    "skipped": 1
+  },
   "failures": [
     {"kind": "failure", "name": "test_checkout", "classname": "tests.shop"},
     {"kind": "error", "name": "test_connection", "classname": "tests.db"}
@@ -47,54 +99,70 @@ Bir başarılı, bir atlanan, bir başarısız ve bir kurulum hatası olan örne
 }
 ```
 
-Test sayıları XML'in özet sayaçlarından değil, gerçek `testcase` kayıtlarından hesaplanır.
-`error`, `failure` ve `skipped` aynı kayıtta bulunursa öncelik bu sıradadır.
-XML namespace'leri, iç içe suite'ler ve UTF-8 BOM desteklenir. Boş suite sıfır sonuç üretir;
-test sayısı pozitif ilan edilmiş ama kayıt içermeyen rapor reddedilir.
+### How the counts work
 
-## Seçenekler
+- Counts come from actual `testcase` records. If a record has several status elements, precedence is **error → failure → skipped → passed**.
+- XML namespaces, nested suites, and UTF-8 BOM are supported.
+- A valid empty suite produces zero counts. A report declaring a positive test count without test records is rejected.
+- `omitted_failures` counts failure/error entries excluded by the list limit. Totals still cover all test records.
 
-| Seçenek | Davranış |
-| --- | --- |
-| `--junit DOSYA` | Zorunlu JUnit XML girdisi |
-| `-o DOSYA`, `--output DOSYA` | Yeni dosyaya JSON yaz; varsayılan stdout |
-| `--max-items SAYI` | İlk 1–100 hata kaydını göster; varsayılan 20 |
-| `--help` | Yardım metni |
+## 🧰 CLI options
 
-`omitted_failures`, liste sınırı nedeniyle gösterilmeyen failure/error kayıtlarını sayar.
-Her ad ve sınıf adı en fazla 160 karakterdir. JSON biçimi `schema_version: "1.0"` ile sürümlenir.
+| Option | What it does | Default |
+| :--- | :--- | :--- |
+| `--junit FILE` | Read a JUnit XML report. | Required |
+| `-o FILE`, `--output FILE` | Write JSON to a new file; refuse overwrite. | stdout |
+| `--max-items N` | Include up to `N` failure/error identifiers, from **1 to 100**. | `20` |
+| `--help` | Show command help. | — |
 
-## Veri ve sınırlar
+Each `name` and `classname` is limited to **160 characters**, after supported patterns are masked. The JSON format is versioned with `schema_version: "1.0"`.
 
-- Girdi en fazla **1 MiB**, UTF-8 veya UTF-8 BOM içeren normal bir dosya olmalıdır.
-- Girdi symlink'leri, XML DOCTYPE/ENTITY, yanlış kök ve geçersiz XML reddedilir.
-- Kaynak kod, testler veya ağ çağrıları çalıştırılmaz; girdi dosyası değiştirilmez.
-- Failure mesajları, stack trace, dosya yolları ve yakalanmış stdout/stderr dışarı verilmez.
-- Ad/sınıf alanlarında `API_KEY=...`, `Bearer ...` ve `ghp_...` desenleri kısaltmadan önce
-  `[REDACTED]` ile maskelenir. Bu **best effort** işlemdir: diğer hassas değerler isimlerde kalabilir.
-- Ruff, Markdown, otomatik hata teşhisi ve tam anonimleştirme bu sürümün kapsamında değildir.
+## 🛡️ Data boundaries
 
-## Doğrulama
+| Area | Behavior |
+| :--- | :--- |
+| Input | A regular UTF-8 or UTF-8 BOM file, at most **1 MiB**. |
+| Validation | Rejects input symlinks, DOCTYPE/ENTITY declarations, unsupported roots, and malformed XML. |
+| Output | Test totals and failure/error identifiers; excludes message bodies, stack traces, file-path attributes, and captured stdout/stderr. |
+| Masking | Replaces supported `API_KEY=...`, `Bearer ...`, and `ghp_...` patterns in identifier fields with `[REDACTED]`, before clipping. |
+| Execution | Parses an existing report without running the reported tests or making network requests. Leaves the input file unchanged. |
 
-Ürün, ağ erişimi kapalı ve normal kullanıcıyla çalışan Docker ortamında
-sözdizimi, Ruff, korunan CLI sözleşmesi, davranış/regresyon testleri ve CLI smoke aşamalarından geçer.
-Kabul testleri ile ek regresyonlar `tests/` altında bulunur.
+> 🔎 Masking is **best effort**, not complete anonymization. Other sensitive values can remain in test names or class names. Review the JSON before sharing it.
 
-Geliştirme ortamında pytest kuruluysa testleri çalıştırmak için:
+This version converts JUnit XML to JSON. It does not parse Ruff reports, produce Markdown reports, or diagnose the cause of test failures.
+
+## 🧪 Validation & development
+
+GitHub Actions runs **Ruff, the shipped product and CLI contract tests, and a sample CLI conversion** on each push and pull request.
+
+The delivered code also passed the factory's five Docker stages: syntax, lint, protected CLI contract, behavior/regression tests, and CLI smoke. That validation used a sandbox with networking disabled and a non-root user.
+
+With **pytest installed** in your development environment:
 
 ```powershell
+# Windows / PowerShell
 $env:PYTHONPATH = (Resolve-Path ./src).Path
-python -m pytest -q
+python -m pytest -q tests contract_tests
 ```
 
-Kaynak üzerinden kullanım doğrulanmıştır. PyPI yayını veya wheel kurulumu bu teslimin kapsamında değildir.
+```bash
+# Linux / macOS
+PYTHONPATH=src python -m pytest -q tests contract_tests
+```
 
-## Üretim kaydı
+Source-mode usage is validated. A PyPI release and wheel installation have not been validated for this delivery.
 
-İlk taslak Daily PR Factory tarafından **bir Gemini çağrısıyla** oluşturuldu ve davranış
-kontrollerinin bir kısmında başarısız oldu. Bu teslimde kod **Codex tarafından yerel olarak
-düzeltilmiş**, belgelenmiş ve yeniden Docker'da doğrulanmıştır; ek Gemini çağrısı yapılmadı.
-Bu sürüm tamamen otonom Gemini üretimi başarısı olarak sunulmaz.
-Ürünün pazar talebi veya rakiplerden farklılaşması henüz doğrulanmış değildir.
+## 🏭 Built with Daily PR Factory
 
-JUnit rapor biçimi bağlamı: [pytest JUnit XML çıktısı](https://docs.pytest.org/en/stable/how-to/output.html).
+<details>
+<summary><strong>Production record & current maturity</strong></summary>
+
+The initial draft was generated by Daily PR Factory with **one Gemini call** and failed some behavioral checks. **Codex completed and corrected the implementation locally**, documented it, and validated it again in Docker, with **zero additional Gemini calls**.
+
+This is an assisted completion, not a fully autonomous Gemini success. Market demand and differentiation from competing tools have not yet been validated.
+
+</details>
+
+---
+
+📚 Format reference: [pytest JUnit XML output](https://docs.pytest.org/en/stable/how-to/output.html).

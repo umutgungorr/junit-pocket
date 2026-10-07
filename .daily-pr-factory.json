@@ -2,8 +2,9 @@
   "files": {
     ".github/workflows/ci.yml": "ce2fc36a9db30a356082e9d3cab9b6ca30dc03e8",
     "Dockerfile": "3aef90a2269dd1dfc7f1875dcaf0a53f8722266c",
-    "README.md": "2c9b40d7c57166014e0c92eabb7401c8bdf5c1fc",
+    "README.md": "9a9aaf9947320db6c22ebc22190a454eb09413b7",
     "contract_tests/test_contract.py": "5cefe6050fb7519c1f36e72e4264b70ed18c4495",
+    "docs/assets/banner.svg": "1eb886cc25df67c4a3f416caba58c37bdc278913",
     "examples/sample.xml": "d8a6fb49bd031825307f0573c501054912794457",
     "pyproject.toml": "cd73db2bb6bbcb1b300e9f7ede2d8fbb22703e44",
     "src/junit_pocket/__init__.py": "0dc833f1869a1606535f041918a0e24c8b310cfa",
@@ -14,6 +15,6 @@
   },
   "owner": "umutgungorr",
   "slug": "junit-pocket",
-  "source_sha256": "830e388e7662d38472c43a8f42538c7a00a17537491b31a8ba065d166dffb11c",
+  "source_sha256": "723ea1fe8f5651a24f4594da6a648133dd6261fd81697114c3469938cb5b8049",
   "version": 1
 }
