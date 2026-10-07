@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="demo">
+    <testcase name="test_home" classname="tests.shop" />
+    <testcase name="test_disabled" classname="tests.shop"><skipped /></testcase>
+    <testcase name="test_checkout" classname="tests.shop"><failure message="synthetic demo">Assertion details excluded from JSON.</failure></testcase>
+    <testcase name="test_connection" classname="tests.db"><error message="synthetic setup error" /></testcase>
+  </testsuite>
+</testsuites>

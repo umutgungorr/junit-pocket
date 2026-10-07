@@ -1,1 +1,19 @@
-{"files": {}, "owner": "umutgungorr", "slug": "junit-pocket", "source_sha256": null, "version": 1}
+{
+  "files": {
+    ".github/workflows/ci.yml": "ce2fc36a9db30a356082e9d3cab9b6ca30dc03e8",
+    "Dockerfile": "3aef90a2269dd1dfc7f1875dcaf0a53f8722266c",
+    "README.md": "2c9b40d7c57166014e0c92eabb7401c8bdf5c1fc",
+    "contract_tests/test_contract.py": "5cefe6050fb7519c1f36e72e4264b70ed18c4495",
+    "examples/sample.xml": "d8a6fb49bd031825307f0573c501054912794457",
+    "pyproject.toml": "cd73db2bb6bbcb1b300e9f7ede2d8fbb22703e44",
+    "src/junit_pocket/__init__.py": "0dc833f1869a1606535f041918a0e24c8b310cfa",
+    "src/junit_pocket/__main__.py": "1e3e14580c7519a0a2255bd71b3e67e438febc4f",
+    "src/junit_pocket/main.py": "afd4cf3ecbe0011d55ed04263d2b51886ce9b98e",
+    "tests/test_product.py": "07c15d7a7f38f55db98a2247e1672e1a152931e9",
+    "tests/test_regressions.py": "5a4c589e09a0ed87628cb57ca80e83cf46e4a7fd"
+  },
+  "owner": "umutgungorr",
+  "slug": "junit-pocket",
+  "source_sha256": "830e388e7662d38472c43a8f42538c7a00a17537491b31a8ba065d166dffb11c",
+  "version": 1
+}

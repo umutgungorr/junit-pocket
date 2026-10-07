@@ -1,0 +1,23 @@
+[build-system]
+requires = ["hatchling==1.27.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "junit-pocket"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = []
+
+[project.scripts]
+junit-pocket = "junit_pocket.main:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/junit_pocket"]
+
+[tool.pytest.ini_options]
+testpaths = ["contract_tests", "tests"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+cache-dir = "../../../.ruff_cache"
