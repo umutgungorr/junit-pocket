@@ -41,7 +41,24 @@ flowchart LR
 
 ## 🚀 Quick start
 
-Requires **Python 3.12+**. Run these commands from the repository root using the included source code.
+Requires **Python 3.12+**. Install directly from this repository:
+
+```bash
+python -m pip install "git+https://github.com/umutgungorr/junit-pocket.git"
+junit-pocket --junit path/to/junit.xml
+```
+
+Git is required for this installation method. Alternatively, download/clone the repository and use the source commands below from its root. No PyPI release is advertised.
+
+### A useful CI handoff
+
+After your test runner produces a JUnit report, create a compact artifact for a script or report consumer:
+
+```bash
+junit-pocket --junit test-results.xml --max-items 5 -o test-summary.json
+```
+
+The result contains totals and up to five failure/error identifiers, without the report's message bodies. The test runner remains responsible for failing the CI job; conversion success does not mean the tests passed.
 
 ### Windows · PowerShell
 
@@ -113,6 +130,7 @@ The included sample has **4 tests**: one passed, one failed, one error, and one 
 | `--junit FILE` | Read a JUnit XML report. | Required |
 | `-o FILE`, `--output FILE` | Write JSON to a new file; refuse overwrite. | stdout |
 | `--max-items N` | Include up to `N` failure/error identifiers, from **1 to 100**. | `20` |
+| `--max-input-mib N` | Set the input size cap from **1 to 16 MiB**; larger reports require explicit opt-in. | `1` |
 | `--help` | Show command help. | — |
 
 Each `name` and `classname` is limited to **160 characters**, after supported patterns are masked. The JSON format is versioned with `schema_version: "1.0"`.
@@ -121,7 +139,7 @@ Each `name` and `classname` is limited to **160 characters**, after supported pa
 
 | Area | Behavior |
 | :--- | :--- |
-| Input | A regular UTF-8 or UTF-8 BOM file, at most **1 MiB**. |
+| Input | A regular UTF-8 or UTF-8 BOM file, **1 MiB** by default; opt in to a higher cap, up to **16 MiB**, with `--max-input-mib`. |
 | Validation | Rejects input symlinks, DOCTYPE/ENTITY declarations, unsupported roots, and malformed XML. |
 | Output | Test totals and failure/error identifiers; excludes message bodies, stack traces, file-path attributes, and captured stdout/stderr. |
 | Masking | Replaces supported `API_KEY=...`, `Bearer ...`, and `ghp_...` patterns in identifier fields with `[REDACTED]`, before clipping. |
@@ -150,7 +168,7 @@ python -m pytest -q tests contract_tests
 PYTHONPATH=src python -m pytest -q tests contract_tests
 ```
 
-Source-mode usage is validated. A PyPI release and wheel installation have not been validated for this delivery.
+Source-mode usage and a built wheel installation are checked separately. See the validation record for this update. This project has not been published to PyPI.
 
 ## 🏭 Built with Daily PR Factory
 

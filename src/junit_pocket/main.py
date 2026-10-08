@@ -24,9 +24,14 @@ class SafeArgumentParser(argparse.ArgumentParser):
 
 def build_parser():
     parser = SafeArgumentParser(description="Summarize local JUnit XML as JSON.")
-    parser.add_argument("--junit", required=True, help="UTF-8 JUnit input (at most 1 MiB)")
+    parser.add_argument(
+        "--junit", required=True, help="UTF-8 JUnit input (default size limit: 1 MiB)"
+    )
     parser.add_argument("-o", "--output", help="Create a new output file; default: stdout")
     parser.add_argument("--max-items", type=int, default=20, help="Failure list limit: 1..100")
+    parser.add_argument(
+        "--max-input-mib", type=int, default=1, help="Input size limit: 1..16 MiB; default: 1"
+    )
     return parser
 
 
@@ -41,7 +46,7 @@ def _local_name(tag):
     return tag.rsplit("}", 1)[-1]
 
 
-def _read_input(path):
+def _read_input(path, max_bytes=MAX_INPUT_BYTES):
     try:
         metadata = path.lstat()
     except OSError:
@@ -50,7 +55,7 @@ def _read_input(path):
         raise ReportError("Input symbolic link is not supported.")
     if not stat.S_ISREG(metadata.st_mode):
         raise ReportError("Input must be a regular file.")
-    if metadata.st_size > MAX_INPUT_BYTES:
+    if metadata.st_size > max_bytes:
         raise ReportError("Input exceeds the size limit.")
     flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
     flags |= getattr(os, "O_BINARY", 0)
@@ -62,10 +67,10 @@ def _read_input(path):
                 raise ReportError("Input must be a regular file.")
             if (opened.st_dev, opened.st_ino) != (metadata.st_dev, metadata.st_ino):
                 raise ReportError("Input file changed while opening.")
-            raw = stream.read(MAX_INPUT_BYTES + 1)
+            raw = stream.read(max_bytes + 1)
     except OSError:
         raise ReportError("Cannot read input file.") from None
-    if len(raw) > MAX_INPUT_BYTES:
+    if len(raw) > max_bytes:
         raise ReportError("Input exceeds the size limit.")
     try:
         text = raw.decode("utf-8-sig")
@@ -153,7 +158,11 @@ def main(argv=None):
     try:
         if not 1 <= args.max_items <= 100:
             raise ReportError("max-items must be in range 1..100.")
-        report = _build_report(_read_input(Path(args.junit)), args.max_items)
+        if not 1 <= args.max_input_mib <= 16:
+            raise ReportError("max-input-mib must be in range 1..16.")
+        report = _build_report(
+            _read_input(Path(args.junit), args.max_input_mib * 1024 * 1024), args.max_items
+        )
         _write_report(json.dumps(report, ensure_ascii=False) + "\n", args.output)
     except ReportError as exc:
         sys.stderr.write(f"{exc!s}\n")
