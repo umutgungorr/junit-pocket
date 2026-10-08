@@ -1,20 +1,26 @@
 {
   "files": {
     ".github/workflows/ci.yml": "ce2fc36a9db30a356082e9d3cab9b6ca30dc03e8",
+    ".ruff_cache/.gitignore": "b100327770759f0efb7859fe78aca4801d69ed61",
+    ".ruff_cache/0.16.8/13812452954360325567": "152e761d07b2911394ba82fb7807d236fd4106a4",
+    ".ruff_cache/0.16.8/17625680782803961877": "7962cee03440bb578e3b9dcd2831085f73496e19",
+    ".ruff_cache/0.16.8/3528637747023045641": "28f51b46d95726d49963926355aa762475a2acda",
+    ".ruff_cache/CACHEDIR.TAG": "bc1ecb967a482524e7736038de0df6e08f9ee452",
     "Dockerfile": "3aef90a2269dd1dfc7f1875dcaf0a53f8722266c",
-    "README.md": "9a9aaf9947320db6c22ebc22190a454eb09413b7",
+    "README.md": "7ede43aa274fa55febcda1777a39d5e4bf4702fb",
     "contract_tests/test_contract.py": "5cefe6050fb7519c1f36e72e4264b70ed18c4495",
     "docs/assets/banner.svg": "1eb886cc25df67c4a3f416caba58c37bdc278913",
     "examples/sample.xml": "d8a6fb49bd031825307f0573c501054912794457",
-    "pyproject.toml": "cd73db2bb6bbcb1b300e9f7ede2d8fbb22703e44",
+    "pyproject.toml": "233de45660409f5f4d54f879ecc4b41a381b5ab0",
     "src/junit_pocket/__init__.py": "0dc833f1869a1606535f041918a0e24c8b310cfa",
-    "src/junit_pocket/__main__.py": "1e3e14580c7519a0a2255bd71b3e67e438febc4f",
-    "src/junit_pocket/main.py": "afd4cf3ecbe0011d55ed04263d2b51886ce9b98e",
+    "src/junit_pocket/__main__.py": "51d8b48cf6198e7ab88648ff4c61458030a63f66",
+    "src/junit_pocket/main.py": "15dcd3838c7b36afaf538b5631a49e8d52ecec7a",
+    "tests/test_input_limit.py": "f4c69c8d594e4729bf68f71654f705d643a8bd5b",
     "tests/test_product.py": "07c15d7a7f38f55db98a2247e1672e1a152931e9",
     "tests/test_regressions.py": "5a4c589e09a0ed87628cb57ca80e83cf46e4a7fd"
   },
   "owner": "umutgungorr",
   "slug": "junit-pocket",
-  "source_sha256": "723ea1fe8f5651a24f4594da6a648133dd6261fd81697114c3469938cb5b8049",
+  "source_sha256": "d80993ac444f77983d58c66e937c1fcd344ea9a6ec37cc639eb9df7a440be152",
   "version": 1
 }
